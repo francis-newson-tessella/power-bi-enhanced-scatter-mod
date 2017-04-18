@@ -1250,14 +1250,16 @@ module powerbi.extensibility.visual {
                         });
                     }
 
-                    if (measureX) {
+                    var tooltipPrintCoords = false;
+
+                    if (tooltipPrintCoords && measureX) {
                         seriesData.push({
                             value: xVal,
                             metadata: measureX
                         });
                     }
 
-                    if (measureY) {
+                    if (tooltipPrintCoords && measureY) {
                         seriesData.push({
                             value: yVal,
                             metadata: measureY
