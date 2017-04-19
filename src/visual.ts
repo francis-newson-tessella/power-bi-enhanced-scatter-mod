@@ -1262,6 +1262,20 @@ module powerbi.extensibility.visual {
                         });
                     }
 
+                    var tooltipPrintInfo = false;
+
+                    if (measureSize
+                        && measureSize.values
+                        && measureSize.values.length > EnhancedScatterChart.MinAmountOfValues) {
+
+                        seriesData.push({
+                            value: measureSize.values[categoryIdx],
+                            metadata: measureSize
+                        });
+                    }
+
+                    if (tooltipPrintInfo){
+
                     var tooltipPrintCoords = false;
 
                     if (tooltipPrintCoords && measureX) {
@@ -1278,15 +1292,6 @@ module powerbi.extensibility.visual {
                         });
                     }
 
-                    if (measureSize
-                        && measureSize.values
-                        && measureSize.values.length > EnhancedScatterChart.MinAmountOfValues) {
-
-                        seriesData.push({
-                            value: measureSize.values[categoryIdx],
-                            metadata: measureSize
-                        });
-                    }
 
                     if (measureColorFill
                         && measureColorFill.values
@@ -1376,6 +1381,8 @@ module powerbi.extensibility.visual {
                             value: measureYEnd.values[categoryIdx],
                             metadata: measureYEnd
                         });
+                    }
+
                     }
 
                     const tooltipInfo: VisualTooltipDataItem[] = tooltipBuilder.createTooltipInfo(
