@@ -498,7 +498,19 @@ module powerbi.extensibility.visual {
                     const r: number = Math.sqrt(size / EnhancedScatterChart.R12);
 
                     return `M0,${EnhancedScatterChart.R3 * r}L${(-EnhancedScatterChart.R2 * r)},${r} ${-r},${r} ${-r},${-EnhancedScatterChart.R3 * r} ${r},${-EnhancedScatterChart.R3 * r} ${r},${r} ${EnhancedScatterChart.R2 * r},${r}Z`;
-                }
+                },
+
+                "pie-three": (size: number) => {
+                    const r: number = Math.sqrt((size - 5) / EnhancedScatterChart.R12);
+                    let a: any =  d3.svg.arc()
+                        .innerRadius(5)
+                        .outerRadius(r)
+                        .startAngle(-55 * Math.PI / 180)
+                        .endAngle(55 * Math.PI / 180);
+
+                    return a();
+                },
+
             });
 
             const defaultValue: ShapeFunction = customSymbolTypes.entries()[0].value;
@@ -506,7 +518,7 @@ module powerbi.extensibility.visual {
             if (!shape) {
                 return defaultValue;
             } else if (isNaN(shape)) {
-                return customSymbolTypes[shape && shape.toString().toLowerCase()] || defaultValue;
+                return customSymbolTypes.get(shape && shape.toString().toLowerCase()) || defaultValue;
             }
 
             const result: ShapeEntry = customSymbolTypes.entries()[Math.floor(shape)];
