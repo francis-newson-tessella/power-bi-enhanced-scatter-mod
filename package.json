@@ -43,7 +43,7 @@
     "karma-typescript-preprocessor": "0.3.0",
     "lodash": "4.16.2",
     "powerbi-visuals-tools": "1.4.3",
-    "powerbi-visuals-utils-chartutils": "^0.2.1",
+    "powerbi-visuals-utils-chartutils": "^0.3.0",
     "powerbi-visuals-utils-colorutils": "^0.2.1",
     "powerbi-visuals-utils-dataviewutils": "^0.3.0",
     "powerbi-visuals-utils-interactivityutils": "^0.2.1",

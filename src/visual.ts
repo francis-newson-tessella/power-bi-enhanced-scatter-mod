@@ -3091,7 +3091,8 @@ module powerbi.extensibility.visual {
                 useTickIntervalForDisplayUnits: true,
                 isCategoryAxis: true, // scatter doesn"t have a categorical axis, but this is needed for the pane to react correctly to the x-axis toggle one/off
                 scaleType: options.categoryAxisScaleType,
-                axisDisplayUnits: options.categoryAxisDisplayUnits
+                axisDisplayUnits: options.categoryAxisDisplayUnits,
+                disableNice: true
             });
 
             this.xAxisProperties.axis.tickSize(
@@ -3117,7 +3118,8 @@ module powerbi.extensibility.visual {
                 useTickIntervalForDisplayUnits: true,
                 isCategoryAxis: false,
                 scaleType: options.valueAxisScaleType,
-                axisDisplayUnits: options.valueAxisDisplayUnits
+                axisDisplayUnits: options.valueAxisDisplayUnits,
+                disableNice: true
             });
 
             this.yAxisProperties.axisLabel = this.data.axesLabels.y;
