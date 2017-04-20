@@ -177,6 +177,7 @@ module powerbi.extensibility.visual {
         colorFill?: string;
         svgurl?: string;
         shapeSymbolType?: (value: number) => string;
+        shapeSymbolName?: string;
         rotation: number;
         backdrop?: string;
         xStart?: number;

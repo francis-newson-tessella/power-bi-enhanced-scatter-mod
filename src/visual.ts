@@ -406,6 +406,63 @@ module powerbi.extensibility.visual {
             };
         }
 
+        private static postProcessPieChart(dataPoints: EnhancedScatterChartDataPoint[]):
+        // Look if all the points have shape 'pie', then we are supposed to be putting a pie chart at each position.
+        EnhancedScatterChartDataPoint[]{
+
+            const allPie: boolean = dataPoints.every(
+                (point: EnhancedScatterChartDataPoint): boolean => {
+                   return point.shapeSymbolName == 'pie';
+                } );
+
+            if (!allPie){
+                return dataPoints;
+            }
+
+            let groupedPoints: _.Dictionary<EnhancedScatterChartDataPoint[]> = _.groupBy(dataPoints,
+                function(p:EnhancedScatterChartDataPoint){
+                    return'x'+p.x+'y'+p.y;
+                }
+            );
+
+            let processedPoints: EnhancedScatterChartDataPoint[] = [];
+
+            _.forIn(groupedPoints, function(points: EnhancedScatterChartDataPoint[], key: string ) {
+                var sum: number = points.reduce( function(cur:number, point: EnhancedScatterChartDataPoint):number{
+                    return cur + (point.size as number);
+                }, 0 );
+
+                var angle: number = 0;
+
+                points.forEach( function(point: EnhancedScatterChartDataPoint){
+                    var frac: number = (point.size as number) / sum;
+
+                    point.shapeSymbolType = function(size: number){
+                        //radius and angle sweep are pre-computed so we don't actually use the size parameter here
+
+                        const r: number = Math.sqrt(sum * 20);
+                        const frac: number = (point.size as number) / sum;
+
+                        let a: any =  d3.svg.arc()
+                            .innerRadius(5)
+                            .outerRadius(r + 5)
+                            .startAngle(-  Math.PI * frac)
+                            .endAngle( Math.PI * frac);
+
+                        return a();
+                    }
+
+                    angle += frac * 180;
+                    point.rotation = angle;
+                    angle += frac * 180;
+
+                    processedPoints.push(point);
+                });
+            });
+
+            return processedPoints;
+        }
+
         private static getCustomSymbolType(shape: any): ShapeFunction {
             const customSymbolTypes = d3.map<ShapeFunction>({
                 "circle": (size: number) => {
@@ -1201,6 +1258,7 @@ module powerbi.extensibility.visual {
                     let size: number,
                         colorFill: string,
                         shapeSymbolType: ShapeFunction,
+                        shapeSymbolName: string,
                         image: string,
                         rotation: number,
                         backdrop: string,
@@ -1390,6 +1448,9 @@ module powerbi.extensibility.visual {
                         category ? [category] : undefined,
                         seriesData);
 
+                    shapeSymbolName = EnhancedScatterChart.getValueFromDataViewValueColumnById(
+                        measureShape, categoryIdx);
+
                     dataPoints.push({
                         size,
                         rotation,
@@ -1401,6 +1462,7 @@ module powerbi.extensibility.visual {
                         identity,
                         colorFill,
                         shapeSymbolType,
+                        shapeSymbolName,
                         tooltipInfo,
                         x: xVal,
                         y: yVal,
@@ -1418,6 +1480,8 @@ module powerbi.extensibility.visual {
                     });
                 }
             }
+
+            dataPoints = EnhancedScatterChart.postProcessPieChart(dataPoints);
 
             return dataPoints;
         }
