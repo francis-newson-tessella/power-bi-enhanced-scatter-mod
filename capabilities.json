@@ -655,6 +655,19 @@
                 }
             }
         },
+
+        "pieZoom": {
+            "displayName": "Pie Zoom",
+            "properties": {
+                "zoom": {
+                    "displayName": "zoom",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
+
         "backdrop": {
             "displayName": "Backdrop",
             "properties": {

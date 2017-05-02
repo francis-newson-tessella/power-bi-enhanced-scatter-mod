@@ -162,6 +162,12 @@ module powerbi.extensibility.visual {
                 "propertyName": "show"
             }
         },
+        "pieZoom": {
+            "zoom": {
+                "objectName": "pieZoom",
+                "propertyName": "zoom"
+            }
+        },
         "backdrop": {
             "show": {
                 "objectName": "backdrop",

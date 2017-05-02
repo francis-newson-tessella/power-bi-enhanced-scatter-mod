@@ -158,6 +158,8 @@ module powerbi.extensibility.visual {
         private static DefaultOutline: boolean = false;
         private static DefaultShowAllDataPoints: boolean = true;
 
+        private static DefaultPieZoom: number = 1;
+
         private static DefaultSelectionStateOfTheDataPoint: boolean = false;
         private static DefaultContentPosition: number = 8;
 
@@ -412,7 +414,7 @@ module powerbi.extensibility.visual {
 
             const allPie: boolean = dataPoints.every(
                 (point: EnhancedScatterChartDataPoint): boolean => {
-                   return point.shapeSymbolName == 'pie';
+                   return point.shapeSymbolName == 'pie' && point.size != null ;
                 } );
 
             if (!allPie){
@@ -440,11 +442,13 @@ module powerbi.extensibility.visual {
                     point.shapeSymbolType = function(size: number){
                         //radius and angle sweep are pre-computed so we don't actually use the size parameter here
 
-                        const r: number = Math.sqrt(sum * 20);
+                        const r: number = sum * size;
                         const frac: number = (point.size as number) / sum;
 
+                        console.log(r, Math.atan(r/5));
+
                         let a: any =  d3.svg.arc()
-                            .innerRadius(5)
+                            .innerRadius(5 * Math.atan(r/5))
                             .outerRadius(r + 5)
                             .startAngle(-  Math.PI * frac)
                             .endAngle( Math.PI * frac);
@@ -857,6 +861,7 @@ module powerbi.extensibility.visual {
 
             let dataLabelsSettings: PointDataLabelsSettings = dataLabelUtils.getDefaultPointLabelSettings(),
                 fillPoint: boolean = EnhancedScatterChart.DefaultFillPoint,
+                pieZoom: number = EnhancedScatterChart.DefaultPieZoom,
                 backdrop: EnhancedScatterChartBackdrop = {
                     show: EnhancedScatterChart.DefaultBackdrop.show,
                     url: EnhancedScatterChart.DefaultBackdrop.url
@@ -897,6 +902,11 @@ module powerbi.extensibility.visual {
                     objects,
                     PropertiesOfCapabilities["fillPoint"]["show"],
                     fillPoint);
+
+                pieZoom = DataViewObjects.getValue<number>(
+                   objects,
+                    PropertiesOfCapabilities['pieZoom']["zoom"],
+                    pieZoom );
 
                 const backdropObject: DataViewObject = objects["backdrop"];
 
@@ -1021,6 +1031,7 @@ module powerbi.extensibility.visual {
                 hasDynamicSeries,
                 showAllDataPoints,
                 fillPoint,
+                pieZoom,
                 useShape,
                 useCustomColor,
                 backdrop,
@@ -1538,6 +1549,7 @@ module powerbi.extensibility.visual {
                 hasDynamicSeries: false,
                 useShape: false,
                 useCustomColor: false,
+                pieZoom : 1,
             };
         }
 
@@ -2905,6 +2917,12 @@ module powerbi.extensibility.visual {
             sizeRange: NumberRange,
             duration: number): UpdateSelection<EnhancedScatterChartDataPoint> {
 
+
+            const allPie: boolean = scatterData.every(
+                (point: EnhancedScatterChartDataPoint): boolean => {
+                    return point.shapeSymbolName == 'pie' && point.size != null ;
+                } );
+
             const xScale: any = this.xAxisProperties.scale,
                 yScale: any = this.yAxisProperties.scale,
                 shouldEnableFill: boolean = (!sizeRange || !sizeRange.min) && this.data.fillPoint;
@@ -2959,8 +2977,12 @@ module powerbi.extensibility.visual {
                         }
                     })
                     .attr("d", (dataPoint: EnhancedScatterChartDataPoint) => {
-                        const r: number = EnhancedScatterChart.getBubbleRadius(dataPoint.radius, sizeRange, this.viewport),
-                            area: number = EnhancedScatterChart.RadiusMultiplexer * r * r;
+                        const r: number = EnhancedScatterChart.getBubbleRadius(dataPoint.radius, sizeRange, this.viewport);
+                        var area: number = EnhancedScatterChart.RadiusMultiplexer * r * r;
+
+                        if (allPie){
+                            return dataPoint.shapeSymbolType(this.data.pieZoom);
+                        }
 
                         return dataPoint.shapeSymbolType(area);
                     })
@@ -3368,6 +3390,17 @@ module powerbi.extensibility.visual {
                         selector: null,
                         properties: {
                             show: this.data.fillPoint,
+                        },
+                    });
+
+                    break;
+                }
+                case "pieZoom": {
+                    instances.push({
+                        objectName: "pieZoom",
+                        selector: null,
+                        properties: {
+                            zoom: this.data.pieZoom,
                         },
                     });
 
