@@ -417,8 +417,9 @@ module powerbi.extensibility.visual {
                    return point.shapeSymbolName == 'pie' && point.size != null ;
                 } );
 
+
             if (!allPie){
-                return dataPoints;
+           //     return dataPoints;
             }
 
             let groupedPoints: _.Dictionary<EnhancedScatterChartDataPoint[]> = _.groupBy(dataPoints,
@@ -444,8 +445,6 @@ module powerbi.extensibility.visual {
 
                         const r: number = sum * size;
                         const frac: number = (point.size as number) / sum;
-
-                        console.log(r, Math.atan(r/5));
 
                         let a: any =  d3.svg.arc()
                             .innerRadius(5 * Math.atan(r/5))
@@ -2980,7 +2979,10 @@ module powerbi.extensibility.visual {
                         const r: number = EnhancedScatterChart.getBubbleRadius(dataPoint.radius, sizeRange, this.viewport);
                         var area: number = EnhancedScatterChart.RadiusMultiplexer * r * r;
 
-                        if (allPie){
+                        var truePie = true;
+
+                        //if (allPie){
+                            if (truePie){
                             return dataPoint.shapeSymbolType(this.data.pieZoom);
                         }
 

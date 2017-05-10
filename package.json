@@ -1,6 +1,6 @@
 {
   "name": "powerbi-visuals-enhancedscatter-mod",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A few more properties were added to the existing scatter chart visual, including shapes as markers, background image support, and developer crosshairs for positioning elements onto an image background.",
   "repository": {
     "type": "git",
