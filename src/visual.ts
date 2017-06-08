@@ -578,7 +578,10 @@ module powerbi.extensibility.visual {
             if (!shape) {
                 return defaultValue;
             } else if (isNaN(shape)) {
-                return customSymbolTypes.get(shape && shape.toString().toLowerCase()) || defaultValue;
+                // Aggregates don't work with strings for datasets with many points
+                // so in general this won't work. However, in situations where the aggregation
+                // does work, we can look up the shape by name.
+                return customSymbolTypes.get(shape.toString().toLowerCase()) || defaultValue;
             }
 
             const result: ShapeEntry = customSymbolTypes.entries()[Math.floor(shape)];
