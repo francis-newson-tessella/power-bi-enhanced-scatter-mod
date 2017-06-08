@@ -159,6 +159,7 @@ module powerbi.extensibility.visual {
         private static DefaultShowAllDataPoints: boolean = true;
 
         private static DefaultPieZoom: number = 1;
+        private static DefaultPieShow: boolean = false;
 
         private static DefaultSelectionStateOfTheDataPoint: boolean = false;
         private static DefaultContentPosition: number = 8;
@@ -411,16 +412,6 @@ module powerbi.extensibility.visual {
         private static postProcessPieChart(dataPoints: EnhancedScatterChartDataPoint[]):
         // Look if all the points have shape 'pie', then we are supposed to be putting a pie chart at each position.
         EnhancedScatterChartDataPoint[]{
-
-            const allPie: boolean = dataPoints.every(
-                (point: EnhancedScatterChartDataPoint): boolean => {
-                   return point.shapeSymbolName == 'pie' && point.size != null ;
-                } );
-
-
-            if (!allPie){
-           //     return dataPoints;
-            }
 
             let groupedPoints: _.Dictionary<EnhancedScatterChartDataPoint[]> = _.groupBy(dataPoints,
                 function(p:EnhancedScatterChartDataPoint){
@@ -864,6 +855,7 @@ module powerbi.extensibility.visual {
             let dataLabelsSettings: PointDataLabelsSettings = dataLabelUtils.getDefaultPointLabelSettings(),
                 fillPoint: boolean = EnhancedScatterChart.DefaultFillPoint,
                 pieZoom: number = EnhancedScatterChart.DefaultPieZoom,
+                pieShow: boolean = EnhancedScatterChart.DefaultPieShow,
                 backdrop: EnhancedScatterChartBackdrop = {
                     show: EnhancedScatterChart.DefaultBackdrop.show,
                     url: EnhancedScatterChart.DefaultBackdrop.url
@@ -905,10 +897,16 @@ module powerbi.extensibility.visual {
                     PropertiesOfCapabilities["fillPoint"]["show"],
                     fillPoint);
 
+                pieShow = DataViewObjects.getValue<boolean>(
+                    objects,
+                    PropertiesOfCapabilities['piechart']["show"],
+                    pieShow );
+
                 pieZoom = DataViewObjects.getValue<number>(
                    objects,
-                    PropertiesOfCapabilities['pieZoom']["zoom"],
+                    PropertiesOfCapabilities['piechart']["zoom"],
                     pieZoom );
+
 
                 const backdropObject: DataViewObject = objects["backdrop"];
 
@@ -933,7 +931,7 @@ module powerbi.extensibility.visual {
                 }
             }
 
-            const dataPoints: EnhancedScatterChartDataPoint[] = EnhancedScatterChart.createDataPoints(
+            var dataPoints: EnhancedScatterChartDataPoint[] = EnhancedScatterChart.createDataPoints(
                 visualHost,
                 dataValues,
                 scatterMetadata,
@@ -947,6 +945,10 @@ module powerbi.extensibility.visual {
                 dataLabelsSettings,
                 defaultDataPointColor,
                 categoryQueryName);
+
+            if (pieShow){
+                dataPoints = EnhancedScatterChart.postProcessPieChart(dataPoints)
+            }
 
             if (interactivityService) {
                 interactivityService.applySelectionStateToData(dataPoints);
@@ -1033,6 +1035,7 @@ module powerbi.extensibility.visual {
                 hasDynamicSeries,
                 showAllDataPoints,
                 fillPoint,
+                pieShow,
                 pieZoom,
                 useShape,
                 useCustomColor,
@@ -1494,8 +1497,6 @@ module powerbi.extensibility.visual {
                 }
             }
 
-            dataPoints = EnhancedScatterChart.postProcessPieChart(dataPoints);
-
             return dataPoints;
         }
 
@@ -1551,6 +1552,7 @@ module powerbi.extensibility.visual {
                 hasDynamicSeries: false,
                 useShape: false,
                 useCustomColor: false,
+                pieShow : true,
                 pieZoom : 1,
             };
         }
@@ -2920,11 +2922,6 @@ module powerbi.extensibility.visual {
             duration: number): UpdateSelection<EnhancedScatterChartDataPoint> {
 
 
-            const allPie: boolean = scatterData.every(
-                (point: EnhancedScatterChartDataPoint): boolean => {
-                    return point.shapeSymbolName == 'pie' && point.size != null ;
-                } );
-
             const xScale: any = this.xAxisProperties.scale,
                 yScale: any = this.yAxisProperties.scale,
                 shouldEnableFill: boolean = (!sizeRange || !sizeRange.min) && this.data.fillPoint;
@@ -2982,14 +2979,12 @@ module powerbi.extensibility.visual {
                         const r: number = EnhancedScatterChart.getBubbleRadius(dataPoint.radius, sizeRange, this.viewport);
                         var area: number = EnhancedScatterChart.RadiusMultiplexer * r * r;
 
-                        var truePie = true;
-
-                        //if (allPie){
-                            if (truePie){
+                            if (this.data.pieShow){
                             return dataPoint.shapeSymbolType(this.data.pieZoom);
                         }
-
-                        return dataPoint.shapeSymbolType(area);
+                        else{
+                                return dataPoint.shapeSymbolType(area);
+                            }
                     })
                     .transition()
                     .duration((dataPoint: EnhancedScatterChartDataPoint) => {
@@ -3400,12 +3395,18 @@ module powerbi.extensibility.visual {
 
                     break;
                 }
-                case "pieZoom": {
+                case "piechart": {
                     instances.push({
-                        objectName: "pieZoom",
+                        objectName: "piechart",
+                        displayName: "Pie Chart",
                         selector: null,
                         properties: {
-                            zoom: this.data.pieZoom,
+                            zoom: this.data.pieZoom
+                            ? this.data.pieZoom
+                            : null,
+                            show: this.data.pieShow
+                            ? this.data.pieShow
+                            : false
                         },
                     });
 

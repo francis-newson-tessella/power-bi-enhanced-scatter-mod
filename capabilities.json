@@ -656,11 +656,17 @@
             }
         },
 
-        "pieZoom": {
-            "displayName": "Pie Zoom",
+        "piechart": {
+            "displayName": "Pie Chart",
             "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "zoom": {
-                    "displayName": "zoom",
+                    "displayName": "Zoom",
                     "type": {
                         "numeric": true
                     }

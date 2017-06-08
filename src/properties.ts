@@ -162,9 +162,13 @@ module powerbi.extensibility.visual {
                 "propertyName": "show"
             }
         },
-        "pieZoom": {
+        "piechart": {
+            "show" : {
+                "objectName": "piechart",
+                "propertyName": "show"
+            },
             "zoom": {
-                "objectName": "pieZoom",
+                "objectName": "piechart",
                 "propertyName": "zoom"
             }
         },
