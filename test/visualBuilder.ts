@@ -31,11 +31,11 @@ module powerbi.extensibility.visual.test {
     import VisualBuilderBase = powerbi.extensibility.utils.test.VisualBuilderBase;
 
     // EnhancedScatterChart1443994985041
-    import VisualClass = powerbi.extensibility.visual.EnhancedScatterChart1443994985041.EnhancedScatterChart;
+    import VisualClass = powerbi.extensibility.visual.EnhancedScatterChartModv011.EnhancedScatterChart;
 
     export class EnhancedScatterChartBuilder extends VisualBuilderBase<VisualClass> {
         constructor(width: number, height: number) {
-            super(width, height, "EnhancedScatterChart1443994985041");
+            super(width, height, "EnhancedScatterChartModv011");
         }
 
         protected build(options: VisualConstructorOptions) {

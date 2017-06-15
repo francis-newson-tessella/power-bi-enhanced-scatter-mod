@@ -28,7 +28,7 @@
 
 module powerbi.extensibility.visual.test {
     // powerbi.extensibility.visual
-    import EnhancedScatterChart = powerbi.extensibility.visual.EnhancedScatterChart1443994985041.EnhancedScatterChart;
+    import EnhancedScatterChart = powerbi.extensibility.visual.EnhancedScatterChartModv011.EnhancedScatterChart;
 
     // powerbi.extensibility.utils.type
     import ValueType = powerbi.extensibility.utils.type.ValueType;
