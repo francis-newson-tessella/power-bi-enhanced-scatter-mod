@@ -683,6 +683,17 @@
                 }
             }
         },
+        "niceaxisrange": {
+            "displayName": "Nice Axis Range",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
         "backdrop": {
             "displayName": "Backdrop",
             "properties": {

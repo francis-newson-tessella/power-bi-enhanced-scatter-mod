@@ -217,6 +217,7 @@ module powerbi.extensibility.visual {
         pieShow?: boolean;
         pieZoom?: number;
         detailedTooltips?:boolean;
+        niceAxisRange?:boolean;
         colorBorder?: boolean;
         colorByCategory?: boolean;
         selectedIds: ISelectionId[];

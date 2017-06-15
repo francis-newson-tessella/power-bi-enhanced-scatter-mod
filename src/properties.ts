@@ -178,6 +178,12 @@ module powerbi.extensibility.visual {
                 "propertyName": "show"
             }
         },
+        "niceaxisrange": {
+            "show": {
+                "objectName": "niceaxisrange",
+                "propertyName": "show"
+            }
+        },
         "backdrop": {
             "show": {
                 "objectName": "backdrop",

@@ -162,6 +162,8 @@ module powerbi.extensibility.visual {
         private static DefaultPieShow: boolean = false;
 
         private static DefaultDetailedTooltips: boolean = true;
+        private static DefaultNiceAxisRange: boolean = true;
+
         private static DefaultSelectionStateOfTheDataPoint: boolean = false;
         private static DefaultContentPosition: number = 8;
 
@@ -855,6 +857,7 @@ module powerbi.extensibility.visual {
                 pieZoom: number = EnhancedScatterChart.DefaultPieZoom,
                 pieShow: boolean = EnhancedScatterChart.DefaultPieShow,
                 detailedTooltips: boolean = EnhancedScatterChart.DefaultDetailedTooltips,
+                niceAxisRange: boolean = EnhancedScatterChart.DefaultNiceAxisRange,
                 backdrop: EnhancedScatterChartBackdrop = {
                     show: EnhancedScatterChart.DefaultBackdrop.show,
                     url: EnhancedScatterChart.DefaultBackdrop.url
@@ -910,6 +913,12 @@ module powerbi.extensibility.visual {
                     objects,
                     PropertiesOfCapabilities['detailedtooltips']["show"],
                     detailedTooltips );
+
+                niceAxisRange = DataViewObjects.getValue<boolean>(
+                    objects,
+                    PropertiesOfCapabilities['niceaxisrange']["show"],
+                    niceAxisRange );
+
                 const backdropObject: DataViewObject = objects["backdrop"];
 
                 if (backdropObject !== undefined) {
@@ -1042,6 +1051,7 @@ module powerbi.extensibility.visual {
                 pieShow,
                 pieZoom,
                 detailedTooltips,
+                niceAxisRange,
                 useShape,
                 useCustomColor,
                 backdrop,
@@ -3177,6 +3187,7 @@ module powerbi.extensibility.visual {
 
             xAxisFormatString = valueFormatter.getFormatStringByColumn(data.xCol);
 
+
             this.xAxisProperties = axis.createAxis({
                 pixelSpan: this.viewportIn.width,
                 dataDomain: combinedXDomain,
@@ -3189,7 +3200,8 @@ module powerbi.extensibility.visual {
                 useTickIntervalForDisplayUnits: true,
                 isCategoryAxis: true, // scatter doesn"t have a categorical axis, but this is needed for the pane to react correctly to the x-axis toggle one/off
                 scaleType: options.categoryAxisScaleType,
-                axisDisplayUnits: options.categoryAxisDisplayUnits
+                axisDisplayUnits: options.categoryAxisDisplayUnits,
+                disableNice: ! this.data.niceAxisRange
             });
 
             this.xAxisProperties.axis.tickSize(
@@ -3215,7 +3227,8 @@ module powerbi.extensibility.visual {
                 useTickIntervalForDisplayUnits: true,
                 isCategoryAxis: false,
                 scaleType: options.valueAxisScaleType,
-                axisDisplayUnits: options.valueAxisDisplayUnits
+                axisDisplayUnits: options.valueAxisDisplayUnits,
+                disableNice: ! this.data.niceAxisRange
             });
 
             this.yAxisProperties.axisLabel = this.data.axesLabels.y;
@@ -3417,6 +3430,20 @@ module powerbi.extensibility.visual {
 
                     break;
                 }
+
+                case "niceaxisrange": {
+                    instances.push({
+                        objectName: "niceaxisrange",
+                        displayName: "Nice Axis Range",
+                        selector: null,
+                        properties: {
+                            show: this.data.niceAxisRange
+                        },
+                    });
+
+                    break;
+                }
+
                 case "backdrop": {
                     instances.push({
                         objectName: "backdrop",
