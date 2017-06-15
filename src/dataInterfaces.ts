@@ -214,6 +214,10 @@ module powerbi.extensibility.visual {
         showAllDataPoints?: boolean;
         hasDynamicSeries?: boolean;
         fillPoint?: boolean;
+        pieShow?: boolean;
+        pieZoom?: number;
+        detailedTooltips?:boolean;
+        niceAxisRange?:boolean;
         colorBorder?: boolean;
         colorByCategory?: boolean;
         selectedIds: ISelectionId[];

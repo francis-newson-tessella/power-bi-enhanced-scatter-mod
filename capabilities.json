@@ -655,6 +655,45 @@
                 }
             }
         },
+        "piechart": {
+            "displayName": "Pie Chart",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "zoom": {
+                    "displayName": "Zoom",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
+        "detailedtooltips": {
+            "displayName": "Detailed Tooltips",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
+        "niceaxisrange": {
+            "displayName": "Nice Axis Range",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
         "backdrop": {
             "displayName": "Backdrop",
             "properties": {

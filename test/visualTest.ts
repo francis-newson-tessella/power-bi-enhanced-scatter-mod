@@ -31,10 +31,10 @@ module powerbi.extensibility.visual.test {
     import Selection = d3.Selection;
 
     // powerbi.extensibility.visual
-    import VisualClass = powerbi.extensibility.visual.EnhancedScatterChart1443994985041.EnhancedScatterChart;
-    import IEnhancedScatterChartData = powerbi.extensibility.visual.EnhancedScatterChart1443994985041.EnhancedScatterChartData;
-    import EnhancedScatterChartDataPoint = powerbi.extensibility.visual.EnhancedScatterChart1443994985041.EnhancedScatterChartDataPoint;
-    import ElementProperties = powerbi.extensibility.visual.EnhancedScatterChart1443994985041.ElementProperties;
+    import VisualClass = powerbi.extensibility.visual.EnhancedScatterChartModv011.EnhancedScatterChart;
+    import IEnhancedScatterChartData = powerbi.extensibility.visual.EnhancedScatterChartModv011.EnhancedScatterChartData;
+    import EnhancedScatterChartDataPoint = powerbi.extensibility.visual.EnhancedScatterChartModv011.EnhancedScatterChartDataPoint;
+    import ElementProperties = powerbi.extensibility.visual.EnhancedScatterChartModv011.ElementProperties;
 
     // powerbi.extensibility.visual.test
     import areColorsEqual = powerbi.extensibility.visual.test.helpers.areColorsEqual;
