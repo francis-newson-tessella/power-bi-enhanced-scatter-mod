@@ -160,6 +160,8 @@ module powerbi.extensibility.visual {
 
         private static DefaultPieZoom: number = 1;
         private static DefaultPieShow: boolean = false;
+
+        private static DefaultDetailedTooltips: boolean = true;
         private static DefaultSelectionStateOfTheDataPoint: boolean = false;
         private static DefaultContentPosition: number = 8;
 
@@ -852,6 +854,7 @@ module powerbi.extensibility.visual {
                 fillPoint: boolean = EnhancedScatterChart.DefaultFillPoint,
                 pieZoom: number = EnhancedScatterChart.DefaultPieZoom,
                 pieShow: boolean = EnhancedScatterChart.DefaultPieShow,
+                detailedTooltips: boolean = EnhancedScatterChart.DefaultDetailedTooltips,
                 backdrop: EnhancedScatterChartBackdrop = {
                     show: EnhancedScatterChart.DefaultBackdrop.show,
                     url: EnhancedScatterChart.DefaultBackdrop.url
@@ -902,6 +905,11 @@ module powerbi.extensibility.visual {
                     objects,
                     PropertiesOfCapabilities['piechart']["zoom"],
                     pieZoom );
+
+                detailedTooltips = DataViewObjects.getValue<boolean>(
+                    objects,
+                    PropertiesOfCapabilities['detailedtooltips']["show"],
+                    detailedTooltips );
                 const backdropObject: DataViewObject = objects["backdrop"];
 
                 if (backdropObject !== undefined) {
@@ -937,6 +945,7 @@ module powerbi.extensibility.visual {
                 colorPalette,
                 hasDynamicSeries,
                 dataLabelsSettings,
+                detailedTooltips,
                 defaultDataPointColor,
                 categoryQueryName);
 
@@ -1032,6 +1041,7 @@ module powerbi.extensibility.visual {
                 fillPoint,
                 pieShow,
                 pieZoom,
+                detailedTooltips,
                 useShape,
                 useCustomColor,
                 backdrop,
@@ -1198,6 +1208,7 @@ module powerbi.extensibility.visual {
             colorPalette: IColorPalette,
             hasDynamicSeries: boolean,
             labelSettings: PointDataLabelsSettings,
+            detailedTooltips: boolean,
             defaultDataPointColor?: string,
             categoryQueryName?: string): EnhancedScatterChartDataPoint[] {
 
@@ -1330,20 +1341,6 @@ module powerbi.extensibility.visual {
                         });
                     }
 
-                    if (measureX) {
-                        seriesData.push({
-                            value: xVal,
-                            metadata: measureX
-                        });
-                    }
-
-                    if (measureY) {
-                        seriesData.push({
-                            value: yVal,
-                            metadata: measureY
-                        });
-                    }
-
                     if (measureSize
                         && measureSize.values
                         && measureSize.values.length > EnhancedScatterChart.MinAmountOfValues) {
@@ -1354,94 +1351,111 @@ module powerbi.extensibility.visual {
                         });
                     }
 
-                    if (measureColorFill
-                        && measureColorFill.values
-                        && measureColorFill.values.length > EnhancedScatterChart.MinAmountOfValues) {
+                    if (detailedTooltips) {
 
-                        seriesData.push({
-                            value: measureColorFill.values[categoryIdx],
-                            metadata: measureColorFill
-                        });
-                    }
+                        if (measureX) {
+                            seriesData.push({
+                                value: xVal,
+                                metadata: measureX
+                            });
+                        }
 
-                    if (measureShape
-                        && measureShape.values
-                        && measureShape.values.length > EnhancedScatterChart.MinAmountOfValues) {
+                        if (measureY) {
+                            seriesData.push({
+                                value: yVal,
+                                metadata: measureY
+                            });
+                        }
 
-                        seriesData.push({
-                            value: measureShape.values[categoryIdx],
-                            metadata: measureShape
-                        });
-                    }
+                        if (measureColorFill
+                            && measureColorFill.values
+                            && measureColorFill.values.length > EnhancedScatterChart.MinAmountOfValues) {
 
-                    if (measureImage
-                        && measureImage.values
-                        && measureImage.values.length > EnhancedScatterChart.MinAmountOfValues) {
+                            seriesData.push({
+                                value: measureColorFill.values[categoryIdx],
+                                metadata: measureColorFill
+                            });
+                        }
 
-                        seriesData.push({
-                            value: measureImage.values[categoryIdx],
-                            metadata: measureImage
-                        });
-                    }
+                        if (measureShape
+                            && measureShape.values
+                            && measureShape.values.length > EnhancedScatterChart.MinAmountOfValues) {
 
-                    if (measureRotation
-                        && measureRotation.values
-                        && measureRotation.values.length > EnhancedScatterChart.MinAmountOfValues) {
+                            seriesData.push({
+                                value: measureShape.values[categoryIdx],
+                                metadata: measureShape
+                            });
+                        }
 
-                        seriesData.push({
-                            value: measureRotation.values[categoryIdx],
-                            metadata: measureRotation
-                        });
-                    }
+                        if (measureImage
+                            && measureImage.values
+                            && measureImage.values.length > EnhancedScatterChart.MinAmountOfValues) {
 
-                    if (measureBackdrop
-                        && measureBackdrop.values
-                        && measureBackdrop.values.length > EnhancedScatterChart.MinAmountOfValues) {
+                            seriesData.push({
+                                value: measureImage.values[categoryIdx],
+                                metadata: measureImage
+                            });
+                        }
 
-                        seriesData.push({
-                            value: measureBackdrop.values[categoryIdx],
-                            metadata: measureBackdrop
-                        });
-                    }
+                        if (measureRotation
+                            && measureRotation.values
+                            && measureRotation.values.length > EnhancedScatterChart.MinAmountOfValues) {
 
-                    if (measureXStart
-                        && measureXStart.values
-                        && measureXStart.values.length > EnhancedScatterChart.MinAmountOfValues) {
+                            seriesData.push({
+                                value: measureRotation.values[categoryIdx],
+                                metadata: measureRotation
+                            });
+                        }
 
-                        seriesData.push({
-                            value: measureXStart.values[categoryIdx],
-                            metadata: measureXStart
-                        });
-                    }
+                        if (measureBackdrop
+                            && measureBackdrop.values
+                            && measureBackdrop.values.length > EnhancedScatterChart.MinAmountOfValues) {
 
-                    if (measureXEnd
-                        && measureXEnd.values
-                        && measureXEnd.values.length > EnhancedScatterChart.MinAmountOfValues) {
+                            seriesData.push({
+                                value: measureBackdrop.values[categoryIdx],
+                                metadata: measureBackdrop
+                            });
+                        }
 
-                        seriesData.push({
-                            value: measureXEnd.values[categoryIdx],
-                            metadata: measureXEnd
-                        });
-                    }
+                        if (measureXStart
+                            && measureXStart.values
+                            && measureXStart.values.length > EnhancedScatterChart.MinAmountOfValues) {
 
-                    if (measureYStart
-                        && measureYStart.values
-                        && measureYStart.values.length > EnhancedScatterChart.MinAmountOfValues) {
+                            seriesData.push({
+                                value: measureXStart.values[categoryIdx],
+                                metadata: measureXStart
+                            });
+                        }
 
-                        seriesData.push({
-                            value: measureYStart.values[categoryIdx],
-                            metadata: measureYStart
-                        });
-                    }
+                        if (measureXEnd
+                            && measureXEnd.values
+                            && measureXEnd.values.length > EnhancedScatterChart.MinAmountOfValues) {
 
-                    if (measureYEnd
-                        && measureYEnd.values
-                        && measureYEnd.values.length > EnhancedScatterChart.MinAmountOfValues) {
+                            seriesData.push({
+                                value: measureXEnd.values[categoryIdx],
+                                metadata: measureXEnd
+                            });
+                        }
 
-                        seriesData.push({
-                            value: measureYEnd.values[categoryIdx],
-                            metadata: measureYEnd
-                        });
+                        if (measureYStart
+                            && measureYStart.values
+                            && measureYStart.values.length > EnhancedScatterChart.MinAmountOfValues) {
+
+                            seriesData.push({
+                                value: measureYStart.values[categoryIdx],
+                                metadata: measureYStart
+                            });
+                        }
+
+                        if (measureYEnd
+                            && measureYEnd.values
+                            && measureYEnd.values.length > EnhancedScatterChart.MinAmountOfValues) {
+
+                            seriesData.push({
+                                value: measureYEnd.values[categoryIdx],
+                                metadata: measureYEnd
+                            });
+                        }
                     }
 
                     const tooltipInfo: VisualTooltipDataItem[] = tooltipBuilder.createTooltipInfo(
@@ -3385,6 +3399,19 @@ module powerbi.extensibility.visual {
                             show: this.data.pieShow
                                 ? this.data.pieShow
                                 : false
+                        },
+                    });
+
+                    break;
+                }
+
+                case "detailedtooltips": {
+                    instances.push({
+                        objectName: "detailedtooltips",
+                        displayName: "Detailed Tooltips",
+                        selector: null,
+                        properties: {
+                            show: this.data.detailedTooltips
                         },
                     });
 

@@ -172,6 +172,12 @@ module powerbi.extensibility.visual {
                 "propertyName": "zoom"
             }
         },
+        "detailedtooltips": {
+            "show": {
+                "objectName": "detailedtooltips",
+                "propertyName": "show"
+            }
+        },
         "backdrop": {
             "show": {
                 "objectName": "backdrop",

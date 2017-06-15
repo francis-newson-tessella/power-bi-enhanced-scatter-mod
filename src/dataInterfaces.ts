@@ -216,6 +216,7 @@ module powerbi.extensibility.visual {
         fillPoint?: boolean;
         pieShow?: boolean;
         pieZoom?: number;
+        detailedTooltips?:boolean;
         colorBorder?: boolean;
         colorByCategory?: boolean;
         selectedIds: ISelectionId[];

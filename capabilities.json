@@ -672,6 +672,17 @@
                 }
             }
         },
+        "detailedtooltips": {
+            "displayName": "Detailed Tooltips",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
         "backdrop": {
             "displayName": "Backdrop",
             "properties": {
