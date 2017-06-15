@@ -158,6 +158,8 @@ module powerbi.extensibility.visual {
         private static DefaultOutline: boolean = false;
         private static DefaultShowAllDataPoints: boolean = true;
 
+        private static DefaultPieZoom: number = 1;
+        private static DefaultPieShow: boolean = false;
         private static DefaultSelectionStateOfTheDataPoint: boolean = false;
         private static DefaultContentPosition: number = 8;
 
@@ -405,6 +407,66 @@ module powerbi.extensibility.visual {
                     EnhancedScatterChart.MinViewport.height)
             };
         }
+
+        private static postProcessPieChart(dataPoints: EnhancedScatterChartDataPoint[]):
+        EnhancedScatterChartDataPoint[]{
+
+            // Output array
+            let processedPoints: EnhancedScatterChartDataPoint[] = [];
+
+            // Group points by x,y position
+            let groupedPoints: _.Dictionary<EnhancedScatterChartDataPoint[]> = _.groupBy(dataPoints,
+                function(p:EnhancedScatterChartDataPoint){
+                    return'x'+p.x+'y'+p.y;
+                }
+            );
+
+
+            //Process each group separately
+            _.forIn(groupedPoints, function(points: EnhancedScatterChartDataPoint[], key: string ) {
+
+                // Total weight of all points in group
+                var sum: number = points.reduce(
+                    function(cur:number, point: EnhancedScatterChartDataPoint):number{
+                    return cur + (point.size as number);
+                }, 0 );
+
+                //We'll increment the angle as we go round
+                var angle: number = 0;
+
+                points.forEach( function(point: EnhancedScatterChartDataPoint){
+
+                    // We can precompute the angular fraction
+                    // The radius is computed on draw
+                    var point_frac: number = (point.size as number) / sum;
+
+                    point.shapeSymbolType = function(size: number){
+
+                        const r: number = sum * size;
+                        const frac: number = point_frac;
+
+                        let a: any =  d3.svg.arc()
+                            .innerRadius(5 * Math.atan(r/5))
+                            .outerRadius(r + 5)
+                            .startAngle(-  Math.PI * frac)
+                            .endAngle( Math.PI * frac);
+
+                        return a();
+                    }
+
+                    // Centre the wedges around the angle
+                    angle += point_frac * 180;
+                    point.rotation = angle;
+                    angle += point_frac * 180;
+
+                    processedPoints.push(point);
+                });
+            });
+
+            return processedPoints;
+        }
+
+
 
         private static getCustomSymbolType(shape: any): ShapeFunction {
             const customSymbolTypes = d3.map<ShapeFunction>({
@@ -788,6 +850,8 @@ module powerbi.extensibility.visual {
 
             let dataLabelsSettings: PointDataLabelsSettings = dataLabelUtils.getDefaultPointLabelSettings(),
                 fillPoint: boolean = EnhancedScatterChart.DefaultFillPoint,
+                pieZoom: number = EnhancedScatterChart.DefaultPieZoom,
+                pieShow: boolean = EnhancedScatterChart.DefaultPieShow,
                 backdrop: EnhancedScatterChartBackdrop = {
                     show: EnhancedScatterChart.DefaultBackdrop.show,
                     url: EnhancedScatterChart.DefaultBackdrop.url
@@ -829,6 +893,15 @@ module powerbi.extensibility.visual {
                     PropertiesOfCapabilities["fillPoint"]["show"],
                     fillPoint);
 
+                pieShow = DataViewObjects.getValue<boolean>(
+                    objects,
+                    PropertiesOfCapabilities['piechart']["show"],
+                    pieShow );
+
+                pieZoom = DataViewObjects.getValue<number>(
+                    objects,
+                    PropertiesOfCapabilities['piechart']["zoom"],
+                    pieZoom );
                 const backdropObject: DataViewObject = objects["backdrop"];
 
                 if (backdropObject !== undefined) {
@@ -852,7 +925,7 @@ module powerbi.extensibility.visual {
                 }
             }
 
-            const dataPoints: EnhancedScatterChartDataPoint[] = EnhancedScatterChart.createDataPoints(
+            var dataPoints: EnhancedScatterChartDataPoint[] = EnhancedScatterChart.createDataPoints(
                 visualHost,
                 dataValues,
                 scatterMetadata,
@@ -866,6 +939,11 @@ module powerbi.extensibility.visual {
                 dataLabelsSettings,
                 defaultDataPointColor,
                 categoryQueryName);
+
+
+            if (pieShow){
+                dataPoints = EnhancedScatterChart.postProcessPieChart(dataPoints);
+            }
 
             if (interactivityService) {
                 interactivityService.applySelectionStateToData(dataPoints);
@@ -952,6 +1030,8 @@ module powerbi.extensibility.visual {
                 hasDynamicSeries,
                 showAllDataPoints,
                 fillPoint,
+                pieShow,
+                pieZoom,
                 useShape,
                 useCustomColor,
                 backdrop,
@@ -2877,7 +2957,13 @@ module powerbi.extensibility.visual {
                         const r: number = EnhancedScatterChart.getBubbleRadius(dataPoint.radius, sizeRange, this.viewport),
                             area: number = EnhancedScatterChart.RadiusMultiplexer * r * r;
 
-                        return dataPoint.shapeSymbolType(area);
+                        if (this.data.pieShow){
+                            return dataPoint.shapeSymbolType(this.data.pieZoom)
+                        }
+                        else {
+                            return dataPoint.shapeSymbolType(area);
+                        }
+
                     })
                     .transition()
                     .duration((dataPoint: EnhancedScatterChartDataPoint) => {
@@ -3281,6 +3367,24 @@ module powerbi.extensibility.visual {
                         selector: null,
                         properties: {
                             show: this.data.fillPoint,
+                        },
+                    });
+
+                    break;
+                }
+
+                case "piechart": {
+                    instances.push({
+                        objectName: "piechart",
+                        displayName: "Pie Chart",
+                        selector: null,
+                        properties: {
+                            zoom: this.data.pieZoom
+                                ? this.data.pieZoom
+                                : null,
+                            show: this.data.pieShow
+                                ? this.data.pieShow
+                                : false
                         },
                     });
 

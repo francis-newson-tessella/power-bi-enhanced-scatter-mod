@@ -655,6 +655,23 @@
                 }
             }
         },
+        "piechart": {
+            "displayName": "Pie Chart",
+            "properties": {
+                "show": {
+                    "displayName": "Show",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "zoom": {
+                    "displayName": "Zoom",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
         "backdrop": {
             "displayName": "Backdrop",
             "properties": {
